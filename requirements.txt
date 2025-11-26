@@ -1,0 +1,33 @@
+# Requisitos para execução da aplicação de Reconhecimento de Gestos
+# ProjetoInova
+
+# Processamento de vídeo e detecção de gestos
+opencv-python>=4.8.0
+mediapipe>=0.10.0
+
+# Reconhecimento de voz
+SpeechRecognition>=3.10.0
+
+# Reprodução de áudio
+# Usando versão fixa do playsound que funciona com Python 3.11+
+# Alternativa: pygame para reprodução de áudio multiplataforma
+pygame>=2.5.0
+
+# WebSocket para notificações em tempo real
+websockets>=11.0
+
+# Processamento de imagens para interface
+Pillow>=10.0.0
+# Nota: As seguintes bibliotecas são padrão do Python e não precisam ser instaladas:
+# - csv (módulo padrão)
+# - os (módulo padrão)
+# - tkinter (módulo padrão - pode precisar de instalação no Linux: python3-tk)
+# - threading (módulo padrão)
+
+# Requisitos do sistema:
+# - Python 3.8 ou superior
+# - Câmera web (para captura de vídeo)
+# - Microfone (para reconhecimento de voz)
+# - Sistema operacional: Windows, Linux ou macOS
+
+

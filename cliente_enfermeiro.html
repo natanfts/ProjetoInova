@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HELP AI - Enfermeiros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #00B4D8 0%, #0096C7 50%, #1B4965 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 30%, #80deea 60%, #4dd0e1 100%);
+            color: #333;
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+            border-bottom: 3px solid #00B4D8;
+        }
+
+        .header-logo {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 3px 6px rgba(27, 73, 101, 0.3));
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #1B4965;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #1B4965;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            background: #e9ecef;
+        }
+
+        .tab-btn.active {
+            color: #00B4D8;
+            border-bottom-color: #00B4D8;
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .status-container {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .status.conectado {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status.desconectado {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .status.reconectando {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .filtros {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filtro-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .filtro-btn.ativo {
+            background-color: #00B4D8;
+            color: white;
+        }
+
+        .filtro-btn.inativo {
+            background-color: #e0e0e0;
+            color: #666;
+        }
+
+        .alertas-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .alertas-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .alertas-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .alertas-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .alerta {
+            border-left: 5px solid;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease-out;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .alerta.urgente {
+            background-color: #ffebee;
+            border-color: #f44336;
+        }
+
+        .alerta.normal {
+            background-color: #e0f7fa;
+            border-color: #00B4D8;
+        }
+
+        .alerta.resolvido {
+            background-color: #f5f5f5;
+            border-color: #9e9e9e;
+            opacity: 0.7;
+        }
+
+        .alerta-paciente {
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .alerta-mensagem {
+            color: #555;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .btn-acao {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-resolver {
+            background-color: #90E0C3;
+            color: #1B4965;
+        }
+
+        .btn-resolver:hover {
+            background-color: #7dd3b5;
+        }
+
+        .btn-remover {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-remover:hover {
+            background-color: #da190b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-primary {
+            background-color: #00B4D8;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #0096C7;
+        }
+
+        .pacientes-lista {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .paciente-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #00B4D8;
+        }
+
+        .paciente-item h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .paciente-item p {
+            color: #666;
+            font-size: 14px;
+            margin: 3px 0;
+        }
+
+        .historico-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #00B4D8;
+        }
+
+        .historico-item.resolvido {
+            border-left-color: #90E0C3;
+            opacity: 0.9;
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 18px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(244, 67, 54, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="assets/logo.png" alt="HELP AI Logo" class="header-logo" id="logo-img" style="display: none;">
+            <div class="header-content">
+                <h1>HELP AI - Enfermeiros</h1>
+                <p>Sistema de Gestos e Cadastro de Pacientes</p>
+            </div>
+        </div>
+
+        <div class="status-container">
+            <div class="status-info">
+                <div id="status" class="status desconectado">Desconectado</div>
+                <span id="contador" style="color: #666;">
+                    <span id="contador-pendentes">0</span> pendentes | 
+                    <span id="contador-resolvidos">0</span> resolvidos
+                </span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="mostrarAba('alertas', event)">📢 Alertas</button>
+            <button class="tab-btn" onclick="mostrarAba('pacientes', event)">👥 Pacientes</button>
+            <button class="tab-btn" onclick="mostrarAba('historico', event)">📋 Histórico</button>
+            <button class="tab-btn" onclick="mostrarAba('config', event)">⚙️ Configurar Gestos</button>
+        </div>
+
+        <!-- Aba de Alertas -->
+        <div id="tab-alertas" class="tab-content active">
+            <div class="filtros" style="padding: 20px 30px 0;">
+                <button class="filtro-btn inativo" data-filtro="todos" onclick="filtrarAlertas('todos')">Todos</button>
+                <button class="filtro-btn ativo" data-filtro="pendentes" onclick="filtrarAlertas('pendentes')">Pendentes</button>
+                <button class="filtro-btn inativo" data-filtro="resolvidos" onclick="filtrarAlertas('resolvidos')">Resolvidos</button>
+            </div>
+            <div class="alertas-container" style="padding: 20px 30px;">
+            <div id="alertas"></div>
+            <div id="vazio" class="vazio">
+                    <div style="font-size: 64px; margin-bottom: 20px;">📭</div>
+                <div>Aguardando notificações...</div>
+                <div style="font-size: 14px; margin-top: 10px; color: #bbb;">
+                    Quando um paciente fizer um gesto, você receberá uma notificação aqui.
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Aba de Cadastro de Pacientes -->
+        <div id="tab-pacientes" class="tab-content">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <h2 style="margin-bottom: 20px;">Cadastrar Novo Paciente</h2>
+                    <form id="form-paciente" onsubmit="cadastrarPaciente(event)">
+                        <div class="form-group">
+                            <label>Nome *</label>
+                            <input type="text" id="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Quarto</label>
+                            <input type="text" id="quarto">
+                        </div>
+                        <div class="form-group">
+                            <label>CPF</label>
+                            <input type="text" id="cpf" placeholder="000.000.000-00">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone</label>
+                            <input type="text" id="telefone" placeholder="(00) 00000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label>Observações</label>
+                            <textarea id="observacoes"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Cadastrar Paciente</button>
+                    </form>
+                </div>
+                <div>
+                    <h2 style="margin-bottom: 20px;">Pacientes Cadastrados</h2>
+                    <div id="lista-pacientes" class="pacientes-lista">
+                        <div class="vazio">
+                            <div style="font-size: 48px; margin-bottom: 10px;">👥</div>
+                            <div>Nenhum paciente cadastrado</div>
+                            <div style="font-size: 14px; margin-top: 10px; color: #bbb;">
+                                Cadastre pacientes usando o formulário ao lado.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba de Histórico -->
+        <div id="tab-historico" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 style="margin: 0;">Histórico de Solicitações</h2>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <div id="historico-filtro-info" style="display: none;">
+                        <span id="historico-filtro-texto" style="background: #e0f7fa; padding: 8px 15px; border-radius: 20px; color: #1B4965; font-weight: bold;"></span>
+                        <button onclick="limparFiltroHistorico()" style="margin-left: 10px; padding: 8px 15px; background: #00B4D8; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                            Ver Todos
+                        </button>
+                    </div>
+                    <button id="btn-marcar-todos-resolvido" onclick="marcarTodosComoResolvido()" style="display: none; padding: 8px 15px; background: #90E0C3; color: #1B4965; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: all 0.3s;" onmouseover="this.style.background='#7dd3b5'" onmouseout="this.style.background='#90E0C3'"">
+                        ✅ Marcar Todos como Resolvido
+                    </button>
+                </div>
+            </div>
+            <div id="historico-container">
+                <div class="vazio">
+                    <div style="font-size: 48px; margin-bottom: 10px;">📋</div>
+                    <div>Nenhuma solicitação no histórico</div>
+                    <div style="font-size: 14px; margin-top: 10px; color: #bbb;">
+                        As solicitações dos pacientes aparecerão aqui.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba de Configuração de Gestos -->
+        <div id="tab-config" class="tab-content">
+            <h2 style="margin-bottom: 20px;">⚙️ Configurar Gestos de Solicitação</h2>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px; color: #333;">📋 Instruções</h3>
+                <ul style="line-height: 1.8; color: #555;">
+                    <li><strong>1 dedo levantado</strong> = Solicitação A</li>
+                    <li><strong>2 dedos levantados</strong> = Solicitação B</li>
+                    <li><strong>3 dedos levantados</strong> = Solicitação C</li>
+                    <li><strong>4 dedos levantados</strong> = Solicitação D</li>
+                    <li><strong>Mão totalmente aberta</strong> (5 dedos) = Enviar solicitação</li>
+                    <li><strong>Mão fechada</strong> (0 dedos) = Cancelar envio</li>
+                </ul>
+            </div>
+
+            <div id="config-gestos-container">
+                <div class="form-group" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <label style="font-size: 18px; font-weight: bold; margin-top: 20px; display: block;">👆 1 Dedo - Solicitação A</label>
+                    <input type="text" id="gesto-1" placeholder="Ex: Quero água" style="margin-top: 5px; width: 100%;">
+                    <label style="margin-top: 10px; display: block; font-weight: bold;">Prioridade:</label>
+                    <select id="prioridade-1" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="baixa">🟢 Baixa</option>
+                        <option value="normal" selected>🟡 Normal</option>
+                        <option value="alta">🟠 Alta</option>
+                        <option value="urgente">🔴 Urgente</option>
+                    </select>
+                    <button class="btn-primary" onclick="salvarGesto(1)" style="margin-top: 10px; padding: 8px 20px; font-size: 14px;">Salvar</button>
+                </div>
+
+                <div class="form-group" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <label style="font-size: 18px; font-weight: bold; margin-top: 20px; display: block;">✌️ 2 Dedos - Solicitação B</label>
+                    <input type="text" id="gesto-2" placeholder="Ex: Preciso ir ao banheiro" style="margin-top: 5px; width: 100%;">
+                    <label style="margin-top: 10px; display: block; font-weight: bold;">Prioridade:</label>
+                    <select id="prioridade-2" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="baixa">🟢 Baixa</option>
+                        <option value="normal" selected>🟡 Normal</option>
+                        <option value="alta">🟠 Alta</option>
+                        <option value="urgente">🔴 Urgente</option>
+                    </select>
+                    <button class="btn-primary" onclick="salvarGesto(2)" style="margin-top: 10px; padding: 8px 20px; font-size: 14px;">Salvar</button>
+                </div>
+
+                <div class="form-group" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <label style="font-size: 18px; font-weight: bold; margin-top: 20px; display: block;">🤟 3 Dedos - Solicitação C</label>
+                    <input type="text" id="gesto-3" placeholder="Ex: Minha medicação acabou" style="margin-top: 5px; width: 100%;">
+                    <label style="margin-top: 10px; display: block; font-weight: bold;">Prioridade:</label>
+                    <select id="prioridade-3" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="baixa">🟢 Baixa</option>
+                        <option value="normal" selected>🟡 Normal</option>
+                        <option value="alta">🟠 Alta</option>
+                        <option value="urgente">🔴 Urgente</option>
+                    </select>
+                    <button class="btn-primary" onclick="salvarGesto(3)" style="margin-top: 10px; padding: 8px 20px; font-size: 14px;">Salvar</button>
+                </div>
+
+                <div class="form-group" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <label style="font-size: 18px; font-weight: bold; margin-top: 20px; display: block;">🖐️ 4 Dedos - Solicitação D</label>
+                    <input type="text" id="gesto-4" placeholder="Ex: Preciso de ajuda urgente" style="margin-top: 5px; width: 100%;">
+                    <label style="margin-top: 10px; display: block; font-weight: bold;">Prioridade:</label>
+                    <select id="prioridade-4" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="baixa">🟢 Baixa</option>
+                        <option value="normal" selected>🟡 Normal</option>
+                        <option value="alta">🟠 Alta</option>
+                        <option value="urgente">🔴 Urgente</option>
+                    </select>
+                    <button class="btn-primary" onclick="salvarGesto(4)" style="margin-top: 10px; padding: 8px 20px; font-size: 14px;">Salvar</button>
+                </div>
+            </div>
+
+            <div id="config-status" style="margin-top: 20px; padding: 10px; border-radius: 5px; display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração
+        // Detecta automaticamente o host e porta do WebSocket
+        const WS_HOST = window.location.hostname || 'localhost';
+        const WS_PORT = 8765;
+        const WS_URL = `ws://${WS_HOST}:${WS_PORT}`;
+
+        // Estado
+        let alertas = [];
+        let pacientes = [];
+        let historico = [];
+        let filtroAtivo = 'pendentes';  // Filtro padrão: apenas pendentes
+        let pacienteFiltroAtivo = null;  // ID do paciente sendo filtrado no histórico
+        let ws = null;
+        let tentativasReconexao = 0;
+        const MAX_TENTATIVAS = 5;
+
+        // Funções de Abas
+        function mostrarAba(aba, event) {
+            // Carrega pacientes quando a aba for exibida
+            if (aba === 'pacientes') {
+                carregarPacientes();
+            }
+            
+            // Carrega histórico quando a aba for exibida
+            if (aba === 'historico') {
+                carregarHistorico(pacienteFiltroAtivo);
+            }
+            
+            // Carrega alertas quando a aba de alertas for exibida
+            if (aba === 'alertas') {
+                carregarAlertasDoHistorico();
+            }
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (event) {
+                event.target.classList.add('active');
+            } else {
+                // Se não houver evento, busca o botão correspondente
+                document.querySelector(`.tab-btn[onclick*="'${aba}'"]`)?.classList.add('active');
+            }
+            document.getElementById(`tab-${aba}`).classList.add('active');
+        }
+
+        // Funções de Alertas
+        function criarAlerta(data, id) {
+            const alerta = document.createElement('div');
+            alerta.className = `alerta ${data.prioridade === 'alta' ? 'urgente pulse' : 'normal'}`;
+            alerta.dataset.alertaId = id;
+            alerta.dataset.status = 'pendente';
+            
+            const icon = data.prioridade === 'alta' ? '🔴' : '⚪';
+            const prioridadeTexto = data.prioridade === 'alta' ? 'URGENTE' : 'Normal';
+            
+            alerta.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-weight: bold; padding: 5px 15px; border-radius: 20px; background: ${data.prioridade === 'alta' ? '#f44336' : '#00B4D8'}; color: white;">
+                        ${icon} ${prioridadeTexto}
+                    </span>
+                    <span style="color: #666; font-size: 12px;">${formatarTimestamp(data.timestamp_iso || data.timestamp || '')}</span>
+                </div>
+                <div class="alerta-paciente">👤 ${data.paciente}</div>
+                <div class="alerta-mensagem">${data.mensagem}</div>
+                <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button class="btn-acao btn-resolver" onclick="marcarComoResolvido('${id}')">
+                        ✅ Resolver
+                    </button>
+                </div>
+            `;
+            
+            return alerta;
+        }
+
+        function adicionarAlerta(data) {
+            const alertasDiv = document.getElementById('alertas');
+            const vazioDiv = document.getElementById('vazio');
+            
+            // Se o alerta já existe (mesmo solicitacao_id), não adiciona novamente
+            if (data.solicitacao_id) {
+                const alertaExistente = alertas.find(a => a.solicitacao_id === data.solicitacao_id);
+                if (alertaExistente) {
+                    // Atualiza dados do alerta existente se necessário
+                    if (alertaExistente.status !== 'resolvido') {
+                        alertaExistente.data = { ...alertaExistente.data, ...data };
+                        // Atualiza a UI se o alerta estiver visível
+                        atualizarListaAlertas();
+                        atualizarContadores();
+                    }
+                    return; // Não adiciona duplicado
+                }
+            }
+            
+            if (vazioDiv.style.display !== 'none') {
+                vazioDiv.style.display = 'none';
+            }
+
+            const id = `alerta-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            // Usa timestamp ISO se disponível, senão cria um
+            const timestampISO = data.timestamp_iso || (new Date().toISOString());
+            
+            const alertaData = {
+                id: id,
+                data: data,
+                status: 'pendente',  // Sempre pendente quando chega via WebSocket
+                timestamp: Date.now(),
+                timestamp_iso: timestampISO,  // Timestamp ISO para sincronização precisa
+                solicitacao_id: data.solicitacao_id || null  // Armazena ID da solicitação se disponível
+            };
+            alertas.unshift(alertaData);
+
+            // Atualiza a lista de alertas na UI
+            atualizarListaAlertas();
+            atualizarContadores();
+
+            if (data.prioridade === 'alta') {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            }
+        }
+
+        // Função para marcar alerta como resolvido (persiste no banco)
+        async function marcarComoResolvido(id) {
+            const alertaIndex = alertas.findIndex(a => a.id === id);
+            
+            if (alertaIndex === -1) {
+                console.error('Alerta não encontrado:', id);
+                return;
+            }
+            
+            const alertaData = alertas[alertaIndex];
+            const solicitacaoId = alertaData.solicitacao_id;
+            
+            // Se não tem solicitacao_id, só atualiza localmente (alerta novo que ainda não foi salvo)
+            if (!solicitacaoId) {
+                alertaData.status = 'resolvido';
+                const alertaElement = document.querySelector(`[data-alerta-id="${id}"]`);
+                if (alertaElement) {
+                    alertaElement.dataset.status = 'resolvido';
+                    alertaElement.classList.add('resolvido');
+                    alertaElement.classList.remove('urgente', 'normal', 'pulse');
+                    
+                    const btnResolver = alertaElement.querySelector('.btn-resolver');
+                    if (btnResolver) {
+                        btnResolver.style.display = 'none';
+                    }
+                    
+                    if (filtroAtivo === 'pendentes') {
+                        alertaElement.style.display = 'none';
+                    }
+                }
+                atualizarContadores();
+                atualizarListaAlertas(); // Atualiza a lista
+                return;
+            }
+            
+            // Tem solicitacao_id - atualiza no banco de dados
+            try {
+                const response = await fetch('/api/historico', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: solicitacaoId,
+                        status: 'resolvido'
+                    })
+                });
+                
+                if (response.ok) {
+                    // Atualiza localmente
+                    alertaData.status = 'resolvido';
+                    
+                    // Atualiza na UI
+                    const alertaElement = document.querySelector(`[data-alerta-id="${id}"]`);
+                    if (alertaElement) {
+                        alertaElement.dataset.status = 'resolvido';
+                        alertaElement.classList.add('resolvido');
+                        alertaElement.classList.remove('urgente', 'normal', 'pulse');
+                        
+                        const btnResolver = alertaElement.querySelector('.btn-resolver');
+                        if (btnResolver) {
+                            btnResolver.style.display = 'none';
+                        }
+                    }
+                    
+                    // Atualiza contadores e lista
+                    atualizarContadores();
+                    atualizarListaAlertas(); // Atualiza a lista com o filtro
+                    
+                    // Recarrega o histórico para sincronizar
+                    await carregarHistorico(pacienteFiltroAtivo);
+                    
+                    console.log(`✅ Alerta ${id} marcado como resolvido no banco (solicitacao_id: ${solicitacaoId})`);
+                } else {
+                    const erro = await response.json();
+                    console.error('Erro ao marcar como resolvido:', erro);
+                    alert('❌ Erro ao marcar como resolvido: ' + (erro.erro || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro ao marcar alerta como resolvido:', error);
+                alert('❌ Erro ao marcar como resolvido. Verifique o console para mais detalhes.');
+            }
+        }
+
+        function removerAlerta(id) {
+            const alertaElement = document.querySelector(`[data-alerta-id="${id}"]`);
+            const alertaIndex = alertas.findIndex(a => a.id === id);
+            
+            if (alertaElement && alertaIndex !== -1) {
+                alertaElement.style.opacity = '0';
+                alertaElement.style.transform = 'translateX(-100px)';
+                
+                setTimeout(() => {
+                    alertaElement.remove();
+                    const status = alertas[alertaIndex].status;
+                    alertas.splice(alertaIndex, 1);
+                    atualizarContadores();
+                    
+                    if (alertas.length === 0) {
+                        document.getElementById('vazio').style.display = 'block';
+                    }
+                }, 300);
+            }
+        }
+
+        function filtrarAlertas(filtro) {
+            filtroAtivo = filtro;
+            
+            document.querySelectorAll('.filtro-btn').forEach(btn => {
+                if (btn.dataset.filtro === filtro) {
+                    btn.classList.add('ativo');
+                    btn.classList.remove('inativo');
+                } else {
+                    btn.classList.remove('ativo');
+                    btn.classList.add('inativo');
+                }
+            });
+            
+            // Atualiza a lista de alertas
+            atualizarListaAlertas();
+            atualizarContadores();
+        }
+
+        function atualizarContadores() {
+            const pendentes = alertas.filter(a => a.status === 'pendente').length;
+            const resolvidos = alertas.filter(a => a.status === 'resolvido').length;
+            
+            document.getElementById('contador-pendentes').textContent = pendentes;
+            document.getElementById('contador-resolvidos').textContent = resolvidos;
+        }
+
+        // Funções de Pacientes
+        async function carregarPacientes() {
+            try {
+                const response = await fetch('/api/pacientes?apenas_ativos=false');
+                if (response.ok) {
+                    pacientes = await response.json();
+                    atualizarListaPacientes();
+                } else {
+                    console.error('Erro ao carregar pacientes:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar pacientes:', error);
+            }
+        }
+
+        async function cadastrarPaciente(event) {
+            event.preventDefault();
+            
+            const paciente = {
+                nome: document.getElementById('nome').value,
+                quarto: document.getElementById('quarto').value || null,
+                cpf: document.getElementById('cpf').value || null,
+                telefone: document.getElementById('telefone').value || null,
+                observacoes: document.getElementById('observacoes').value || null
+            };
+            
+            if (!paciente.nome || paciente.nome.trim() === '') {
+                alert('❌ O nome do paciente é obrigatório!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/pacientes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(paciente)
+                });
+                
+                if (response.ok) {
+                    const resultado = await response.json();
+                    if (resultado.sucesso) {
+                        // Recarrega lista de pacientes
+                        await carregarPacientes();
+                        
+                        // Limpa formulário
+                        document.getElementById('form-paciente').reset();
+                        alert('✅ Paciente cadastrado com sucesso!');
+                    } else {
+                        alert('❌ Erro ao cadastrar paciente: ' + (resultado.erro || 'Erro desconhecido'));
+                    }
+                } else {
+                    const erro = await response.json();
+                    alert('❌ Erro ao cadastrar paciente: ' + (erro.erro || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro ao cadastrar paciente:', error);
+                alert('❌ Erro ao cadastrar paciente. Verifique o console para mais detalhes.');
+            }
+        }
+
+        function atualizarListaPacientes() {
+            const listaDiv = document.getElementById('lista-pacientes');
+            
+            if (pacientes.length === 0) {
+                listaDiv.innerHTML = `
+                    <div class="vazio">
+                        <div style="font-size: 48px; margin-bottom: 10px;">👥</div>
+                        <div>Nenhum paciente cadastrado</div>
+                        <div style="font-size: 14px; margin-top: 10px; color: #bbb;">
+                            Cadastre um paciente usando o formulário ao lado.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            listaDiv.innerHTML = pacientes.map(p => `
+                <div class="paciente-item" style="margin-bottom: 15px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: white;">
+                    <h3 style="margin-bottom: 10px;">
+                        <span onclick="verHistoricoPaciente(${p.id}, '${p.nome.replace(/'/g, "\\'")}')" 
+                              style="color: #00B4D8; cursor: pointer; text-decoration: underline; transition: color 0.3s;" 
+                              onmouseover="this.style.color='#0096C7'" 
+                              onmouseout="this.style.color='#00B4D8'"
+                              title="Clique para ver histórico deste paciente">
+                            📋 ${p.nome}
+                        </span>
+                    </h3>
+                    ${p.quarto ? `<p style="margin: 5px 0;">🏥 <strong>Quarto:</strong> ${p.quarto}</p>` : ''}
+                    ${p.cpf ? `<p style="margin: 5px 0;">🆔 <strong>CPF:</strong> ${p.cpf}</p>` : ''}
+                    ${p.telefone ? `<p style="margin: 5px 0;">📞 <strong>Telefone:</strong> ${p.telefone}</p>` : ''}
+                    ${p.observacoes ? `<p style="margin: 5px 0;">📝 <strong>Observações:</strong> ${p.observacoes}</p>` : ''}
+                    <p style="margin: 5px 0; color: ${p.ativo === 1 ? '#00B4D8' : '#999'};">
+                        ${p.ativo === 1 ? '✅ Ativo' : '❌ Inativo'}
+                    </p>
+                </div>
+            `).join('');
+        }
+        
+        // Função para ver histórico de um paciente específico
+        function verHistoricoPaciente(pacienteId, pacienteNome) {
+            pacienteFiltroAtivo = pacienteId;
+            mostrarAba('historico', null);
+            carregarHistorico(pacienteId);
+        }
+
+        // WebSocket
+        function atualizarStatus(status, texto) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${status}`;
+            statusDiv.textContent = texto;
+        }
+
+        function conectar() {
+            try {
+                ws = new WebSocket(WS_URL);
+
+                ws.onopen = () => {
+                    tentativasReconexao = 0;
+                    atualizarStatus('conectado', '✅ Conectado');
+                };
+
+                ws.onmessage = async (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        if (data.tipo === 'gesto') {
+                            adicionarAlerta(data);
+                            // Recarrega histórico do banco (inclui a nova solicitação)
+                            // Se estiver filtrando por paciente, mantém o filtro
+                            await carregarHistorico(pacienteFiltroAtivo);
+                            // Sincroniza alertas após carregar histórico (atualiza status)
+                            sincronizarAlertasComHistorico();
+                        }
+                    } catch (e) {
+                        console.error('Erro ao processar mensagem:', e);
+                    }
+                };
+
+                ws.onclose = () => {
+                    atualizarStatus('desconectado', '❌ Desconectado');
+                    if (tentativasReconexao < MAX_TENTATIVAS) {
+                        tentativasReconexao++;
+                        atualizarStatus('reconectando', `🔄 Reconectando... (${tentativasReconexao}/${MAX_TENTATIVAS})`);
+                        setTimeout(conectar, 3000);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    console.error('Erro WebSocket:', error);
+                    atualizarStatus('desconectado', '❌ Erro na conexão');
+                };
+
+            } catch (e) {
+                console.error('Erro ao criar conexão WebSocket:', e);
+            }
+        }
+
+        // Função para carregar alertas do histórico (pendentes e resolvidos)
+        async function carregarAlertasDoHistorico() {
+            try {
+                // Carrega todas as solicitações (não apenas pendentes) para ter o status correto
+                const response = await fetch('/api/historico');
+                if (response.ok) {
+                    const todasSolicitacoes = await response.json();
+                    
+                    // Remove alertas que têm solicitacao_id mas não estão mais no histórico
+                    alertas = alertas.filter(a => {
+                        if (a.solicitacao_id) {
+                            // Mantém se ainda existe no histórico
+                            return todasSolicitacoes.some(s => s.id === a.solicitacao_id);
+                        }
+                        return true; // Mantém alertas novos via WebSocket que ainda não têm ID
+                    });
+                    
+                    // Atualiza ou cria alertas a partir do histórico
+                    todasSolicitacoes.forEach(solicitacao => {
+                        const alertaExistente = alertas.find(a => a.solicitacao_id === solicitacao.id);
+                        
+                        if (alertaExistente) {
+                            // Atualiza status do alerta existente com base no banco
+                            alertaExistente.status = solicitacao.status === 'resolvido' ? 'resolvido' : 'pendente';
+                            
+                            // Atualiza dados se necessário
+                            if (alertaExistente.data) {
+                                alertaExistente.data.prioridade = solicitacao.prioridade || alertaExistente.data.prioridade || 'normal';
+                                alertaExistente.data.paciente = solicitacao.paciente;
+                                alertaExistente.data.mensagem = solicitacao.mensagem;
+                            }
+                        } else {
+                            // Cria novo alerta a partir do histórico
+                            const dataAlerta = {
+                                solicitacao_id: solicitacao.id,
+                                paciente_id: solicitacao.paciente_id,
+                                paciente: solicitacao.paciente,
+                                mensagem: solicitacao.mensagem,
+                                prioridade: solicitacao.prioridade || 'normal',
+                                timestamp: formatarTimestamp(solicitacao.data_solicitacao || solicitacao.timestamp || ''),
+                                timestamp_iso: solicitacao.data_solicitacao || solicitacao.timestamp || new Date().toISOString()
+                            };
+                            
+                            const id = `alerta-hist-${solicitacao.id}`;
+                            const alertaData = {
+                                id: id,
+                                data: dataAlerta,
+                                status: solicitacao.status === 'resolvido' ? 'resolvido' : 'pendente',
+                                timestamp: new Date(solicitacao.data_solicitacao || solicitacao.timestamp || Date.now()).getTime(),
+                                timestamp_iso: solicitacao.data_solicitacao || solicitacao.timestamp || new Date().toISOString(),
+                                solicitacao_id: solicitacao.id
+                            };
+                            
+                            alertas.push(alertaData);
+                        }
+                    });
+                    
+                    // Ordena por timestamp (mais recente primeiro)
+                    alertas.sort((a, b) => b.timestamp - a.timestamp);
+                    
+                    // Atualiza a UI
+                    atualizarListaAlertas();
+                    atualizarContadores();
+                } else {
+                    console.error('Erro ao carregar alertas do histórico:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar alertas do histórico:', error);
+            }
+        }
+        
+        // Função para atualizar lista de alertas na UI
+        function atualizarListaAlertas() {
+            const alertasDiv = document.getElementById('alertas');
+            const vazioDiv = document.getElementById('vazio');
+            
+            // Limpa lista atual
+            alertasDiv.innerHTML = '';
+            
+            // Filtra alertas de acordo com o filtro ativo
+            let alertasFiltrados = alertas;
+            if (filtroAtivo === 'pendentes') {
+                alertasFiltrados = alertas.filter(a => a.status !== 'resolvido');
+            } else if (filtroAtivo === 'resolvidos') {
+                alertasFiltrados = alertas.filter(a => a.status === 'resolvido');
+            }
+            
+            if (alertasFiltrados.length === 0) {
+                vazioDiv.style.display = 'block';
+                return;
+            }
+            
+            vazioDiv.style.display = 'none';
+            
+            // Adiciona cada alerta à lista
+            alertasFiltrados.forEach(alertaData => {
+                const alertaElement = criarAlerta(alertaData.data, alertaData.id);
+                // Atualiza status visual do alerta
+                if (alertaData.status === 'resolvido') {
+                    alertaElement.classList.add('resolvido');
+                    alertaElement.classList.remove('urgente', 'normal', 'pulse');
+                    alertaElement.dataset.status = 'resolvido';
+                    const btnResolver = alertaElement.querySelector('.btn-resolver');
+                    if (btnResolver) {
+                        btnResolver.style.display = 'none';
+                    }
+                }
+                alertasDiv.appendChild(alertaElement);
+            });
+        }
+        
+        // Função para carregar histórico do banco de dados
+        async function carregarHistorico(pacienteId = null) {
+            try {
+                let url = '/api/historico';
+                if (pacienteId) {
+                    url += `?paciente_id=${pacienteId}`;
+                }
+                
+                const response = await fetch(url);
+                if (response.ok) {
+                    historico = await response.json();
+                    atualizarHistorico();
+                    // Sincroniza alertas após carregar histórico
+                    sincronizarAlertasComHistorico();
+                } else {
+                    console.error('Erro ao carregar histórico:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+            }
+        }
+        
+        // Função para formatar data de forma amigável (usa timezone local do Brasil)
+        function formatarData(dataString) {
+            if (!dataString) return '';
+            
+            try {
+                let data;
+                
+                // Tenta diferentes formatos de data
+                if (dataString.includes('T')) {
+                    // Já está no formato ISO - JavaScript já faz o parse correto com timezone local
+                    data = new Date(dataString);
+                } else if (dataString.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/)) {
+                    // Formato "YYYY-MM-DD HH:MM:SS" (SQLite datetime)
+                    // SQLite CURRENT_TIMESTAMP salva em UTC
+                    // Converte para formato ISO com 'Z' para indicar UTC, depois JavaScript converte para local
+                    const dataISO = dataString.replace(' ', 'T') + 'Z';
+                    data = new Date(dataISO);
+                    
+                    // Se falhar, tenta assumir que já está em horário local (fallback)
+                    if (isNaN(data.getTime())) {
+                        const partes = dataString.split(' ');
+                        const [ano, mes, dia] = partes[0].split('-');
+                        const [hora, minuto, segundo] = partes[1].split(':');
+                        data = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia), 
+                                      parseInt(hora), parseInt(minuto), parseInt(segundo || 0));
+                    }
+                } else {
+                    // Tenta parse direto
+                    data = new Date(dataString);
+                }
+                
+                if (isNaN(data.getTime())) {
+                    // Se não conseguir parsear, retorna a string original
+                    return dataString;
+                }
+                
+                // Formata usando timezone local do navegador (Brasil)
+                const dia = String(data.getDate()).padStart(2, '0');
+                const mes = String(data.getMonth() + 1).padStart(2, '0');
+                const ano = data.getFullYear();
+                const horas = String(data.getHours()).padStart(2, '0');
+                const minutos = String(data.getMinutes()).padStart(2, '0');
+                
+                return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
+            } catch (e) {
+                console.error('Erro ao formatar data:', e, dataString);
+                return dataString;
+            }
+        }
+        
+        // Função para formatar timestamp para exibição (usa horário local)
+        function formatarTimestamp(dataString) {
+            if (!dataString) return '';
+            
+            try {
+                let data;
+                
+                // Se for formato SQLite (YYYY-MM-DD HH:MM:SS), trata como UTC
+                if (dataString.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/)) {
+                    // Assume UTC e converte para local
+                    const dataISO = dataString.replace(' ', 'T') + 'Z';
+                    data = new Date(dataISO);
+                } else if (dataString.includes('T')) {
+                    // Formato ISO
+                    data = new Date(dataString);
+                } else {
+                    // Tenta parse direto
+                    data = new Date(dataString);
+                }
+                
+                if (isNaN(data.getTime())) {
+                    // Se não conseguir, retorna string formatada se já estiver no formato correto
+                    return dataString;
+                }
+                
+                // Formata apenas hora:minuto:segundo no horário local
+                const horas = String(data.getHours()).padStart(2, '0');
+                const minutos = String(data.getMinutes()).padStart(2, '0');
+                const segundos = String(data.getSeconds()).padStart(2, '0');
+                
+                return `${horas}:${minutos}:${segundos}`;
+            } catch (e) {
+                return dataString;
+            }
+        }
+        
+        // Função para calcular tempo decorrido de forma amigável
+        function calcularTempoAguardando(dataString) {
+            if (!dataString) {
+                console.warn('calcularTempoAguardando: dataString vazia');
+                return null;
+            }
+            
+            try {
+                let dataSolicitacao;
+                
+                // Tenta diferentes formatos de data
+                // Formato SQLite: "2025-11-24 19:56:31" ou "2025-11-24 19:56:31.123456"
+                if (dataString.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/)) {
+                    // Formato SQLite datetime: "YYYY-MM-DD HH:MM:SS" 
+                    // Remove microsegundos se houver e converte para ISO
+                    const dataLimpa = dataString.split('.')[0]; // Remove microsegundos
+                    dataSolicitacao = new Date(dataLimpa.replace(' ', 'T'));
+                } else if (dataString.includes('T')) {
+                    // Já está no formato ISO
+                    dataSolicitacao = new Date(dataString);
+                } else {
+                    // Tenta parse direto
+                    dataSolicitacao = new Date(dataString);
+                }
+                
+                if (isNaN(dataSolicitacao.getTime())) {
+                    console.warn('calcularTempoAguardando: Não foi possível parsear a data:', dataString);
+                    return null;
+                }
+                
+                const agora = new Date();
+                const diffMs = agora - dataSolicitacao;
+                
+                // Se a diferença for negativa (data no futuro), retorna "Agora mesmo"
+                if (diffMs < 0) {
+                    console.warn('calcularTempoAguardando: Data no futuro!', dataString, 'agora:', agora.toISOString());
+                    return { texto: 'Agora mesmo', minutos: 0, urgente: false, muitoUrgente: false };
+                }
+                
+                // Converte para segundos, minutos, horas, dias
+                const segundos = Math.floor(diffMs / 1000);
+                const minutos = Math.floor(segundos / 60);
+                const horas = Math.floor(minutos / 60);
+                const dias = Math.floor(horas / 24);
+                
+                // Define níveis de urgência baseado no tempo
+                // Muito urgente: 2+ horas ou 1+ dia
+                // Urgente: 30+ minutos
+                const muitoUrgente = dias >= 1 || horas >= 2;
+                const urgente = minutos >= 30;
+                
+                let texto = '';
+                if (dias > 0) {
+                    texto = `Há ${dias} dia${dias > 1 ? 's' : ''}`;
+                    const horasRestantes = horas % 24;
+                    if (horasRestantes > 0) {
+                        texto += ` e ${horasRestantes} hora${horasRestantes > 1 ? 's' : ''}`;
+                    }
+                } else if (horas > 0) {
+                    texto = `Há ${horas} hora${horas > 1 ? 's' : ''}`;
+                    const minutosRestantes = minutos % 60;
+                    if (minutosRestantes > 0) {
+                        texto += ` e ${minutosRestantes} minuto${minutosRestantes > 1 ? 's' : ''}`;
+                    }
+                } else if (minutos > 0) {
+                    texto = `Há ${minutos} minuto${minutos > 1 ? 's' : ''}`;
+                } else if (segundos > 10) {
+                    texto = `Há ${segundos} segundo${segundos > 1 ? 's' : ''}`;
+                } else {
+                    texto = `Agora mesmo`;
+                }
+                
+                return { 
+                    texto: texto, 
+                    minutos: minutos, 
+                    urgente: urgente,
+                    muitoUrgente: muitoUrgente
+                };
+            } catch (e) {
+                console.error('Erro ao calcular tempo aguardando:', e, dataString);
+                return null;
+            }
+        }
+        
+        // Função para sincronizar alertas com o histórico (atualiza status dos alertas)
+        function sincronizarAlertasComHistorico() {
+            // Percorre cada solicitação do histórico e verifica se há alerta correspondente
+            historico.forEach(solicitacao => {
+                if (solicitacao.status === 'resolvido') {
+                    // Procura alerta correspondente
+                    const alertaCorrespondente = alertas.find(a => {
+                        if (!a || !a.data) return false;
+                        
+                        // PRIMEIRA PRIORIDADE: Se houver solicitacao_id, usa para comparação exata
+                        if (solicitacao.id && a.solicitacao_id) {
+                            return solicitacao.id === a.solicitacao_id;
+                        }
+                        
+                        // SEGUNDA PRIORIDADE: Comparação por paciente, mensagem E timestamp próximo
+                        const nomeHistorico = solicitacao.paciente.split(' - ')[0].trim();
+                        const nomeAlerta = a.data.paciente ? a.data.paciente.split(' - ')[0].trim() : '';
+                        
+                        // Compara paciente
+                        const pacienteMatch = nomeHistorico === nomeAlerta || 
+                                           solicitacao.paciente === a.data.paciente;
+                        
+                        // Compara mensagem exatamente
+                        const mensagemMatch = solicitacao.mensagem === a.data.mensagem;
+                        
+                        // Compara timestamp (deve estar próximo - dentro de 5 minutos)
+                        const timestampHistorico = new Date(solicitacao.timestamp || solicitacao.data_solicitacao || 0);
+                        const timestampAlerta = a.timestamp_iso ? new Date(a.timestamp_iso) : 
+                                                (a.data.timestamp_iso ? new Date(a.data.timestamp_iso) : 
+                                                (a.data.timestamp ? new Date(a.data.timestamp) : new Date(a.timestamp)));
+                        const diffTimestamp = Math.abs(timestampHistorico - timestampAlerta);
+                        const timestampMatch = diffTimestamp < 5 * 60 * 1000; // 5 minutos
+                        
+                        // TODOS os critérios devem coincidir
+                        return pacienteMatch && mensagemMatch && timestampMatch;
+                    });
+                    
+                    // Se encontrou alerta correspondente e ele ainda está pendente, marca como resolvido
+                    if (alertaCorrespondente && alertaCorrespondente.status !== 'resolvido') {
+                        // Marca como resolvido diretamente no array e na UI
+                        alertaCorrespondente.status = 'resolvido';
+                        
+                        // Atualiza na UI se o alerta estiver visível
+                        const alertaElement = document.querySelector(`[data-alerta-id="${alertaCorrespondente.id}"]`);
+                        if (alertaElement) {
+                            alertaElement.classList.add('resolvido');
+                            alertaElement.dataset.status = 'resolvido';
+                            
+                            // Atualiza botões do alerta
+                            const btnResolver = alertaElement.querySelector('.btn-resolver');
+                            if (btnResolver) {
+                                btnResolver.style.display = 'none';
+                            }
+                        }
+                        
+                        // Atualiza contadores
+                        atualizarContadores();
+                        filtrarAlertas(filtroAtivo); // Reaplica o filtro
+                    }
+                } else {
+                    // Se a solicitação não está resolvida no histórico, garante que o alerta também não está
+                    const alertaCorrespondente = alertas.find(a => {
+                        if (!a || !a.data) return false;
+                        
+                        if (solicitacao.id && a.solicitacao_id) {
+                            return solicitacao.id === a.solicitacao_id;
+                        }
+                        
+                        const nomeHistorico = solicitacao.paciente.split(' - ')[0].trim();
+                        const nomeAlerta = a.data.paciente ? a.data.paciente.split(' - ')[0].trim() : '';
+                        const pacienteMatch = nomeHistorico === nomeAlerta || solicitacao.paciente === a.data.paciente;
+                        const mensagemMatch = solicitacao.mensagem === a.data.mensagem;
+                        
+                        return pacienteMatch && mensagemMatch;
+                    });
+                    
+                    // Se encontrou alerta correspondente que está resolvido mas não deveria estar
+                    if (alertaCorrespondente && alertaCorrespondente.status === 'resolvido' && solicitacao.status !== 'resolvido') {
+                        // Reverte o status do alerta
+                        alertaCorrespondente.status = 'pendente';
+                        
+                        const alertaElement = document.querySelector(`[data-alerta-id="${alertaCorrespondente.id}"]`);
+                        if (alertaElement) {
+                            alertaElement.classList.remove('resolvido');
+                            alertaElement.dataset.status = 'pendente';
+                            
+                            const btnResolver = alertaElement.querySelector('.btn-resolver');
+                            if (btnResolver) {
+                                btnResolver.style.display = 'block';
+                            }
+                        }
+                        
+                        atualizarContadores();
+                        filtrarAlertas(filtroAtivo);
+                    }
+                }
+            });
+        }
+        
+        // Função para marcar solicitação como resolvida no histórico
+        async function marcarHistoricoComoResolvido(solicitacaoId) {
+            try {
+                const response = await fetch('/api/historico', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: solicitacaoId,
+                        status: 'resolvido'
+                    })
+                });
+                
+                if (response.ok) {
+                    // Atualiza o histórico no array local também
+                    const solicitacao = historico.find(h => h.id === solicitacaoId);
+                    if (solicitacao) {
+                        solicitacao.status = 'resolvido';
+                        solicitacao.data_resolucao = new Date().toISOString();
+                    }
+                    
+                    // Recarrega o histórico do banco para garantir sincronização
+                    await carregarHistorico(pacienteFiltroAtivo);
+                    
+                    // Sincroniza alertas com o histórico atualizado
+                    sincronizarAlertasComHistorico();
+                } else {
+                    const erro = await response.json();
+                    alert('❌ Erro ao marcar como resolvido: ' + (erro.erro || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro ao marcar como resolvido:', error);
+                alert('❌ Erro ao marcar como resolvido. Verifique o console para mais detalhes.');
+            }
+        }
+        
+        // Função para marcar todas as solicitações pendentes como resolvidas
+        async function marcarTodosComoResolvido() {
+            // Encontra todas as solicitações pendentes no histórico atual
+            const pendentes = historico.filter(h => h.status !== 'resolvido');
+            
+            if (pendentes.length === 0) {
+                alert('ℹ️ Não há solicitações pendentes para resolver.');
+                return;
+            }
+            
+            // Confirmação antes de marcar todas
+            const confirmacao = confirm(
+                `Tem certeza que deseja marcar ${pendentes.length} solicitação${pendentes.length > 1 ? 'ões' : ''} como resolvida${pendentes.length > 1 ? 's' : ''}?`
+            );
+            
+            if (!confirmacao) {
+                return;
+            }
+            
+            // Desabilita o botão durante o processamento
+            const btn = document.getElementById('btn-marcar-todos-resolvido');
+            const textoOriginal = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = '⏳ Processando...';
+            
+            try {
+                // Marca cada uma como resolvida
+                let sucesso = 0;
+                let erros = 0;
+                
+                for (const solicitacao of pendentes) {
+                    try {
+                        const response = await fetch('/api/historico', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id: solicitacao.id,
+                                status: 'resolvido'
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            sucesso++;
+                        } else {
+                            erros++;
+                            console.error(`Erro ao marcar solicitação ${solicitacao.id} como resolvida`);
+                        }
+                    } catch (error) {
+                        erros++;
+                        console.error(`Erro ao marcar solicitação ${solicitacao.id}:`, error);
+                    }
+                }
+                
+                    // Recarrega o histórico
+                    await carregarHistorico(pacienteFiltroAtivo);
+                    
+                    // Sincroniza alertas com o histórico atualizado
+                    sincronizarAlertasComHistorico();
+                    
+                    // Mostra mensagem de resultado
+                    if (erros === 0) {
+                        alert(`✅ ${sucesso} solicitação${sucesso > 1 ? 'ões marcadas' : ' marcada'} como resolvida${sucesso > 1 ? 's' : ''} com sucesso!`);
+                    } else {
+                        alert(`⚠️ ${sucesso} de ${pendentes.length} solicitações foram marcadas como resolvidas. ${erros} erro(s) ocorreram.`);
+                    }
+            } catch (error) {
+                console.error('Erro ao marcar todos como resolvidos:', error);
+                alert('❌ Erro ao marcar solicitações como resolvidas. Verifique o console para mais detalhes.');
+            } finally {
+                // Reabilita o botão
+                btn.disabled = false;
+                btn.textContent = textoOriginal;
+            }
+        }
+        
+        // Função para limpar filtro de histórico
+        function limparFiltroHistorico() {
+            pacienteFiltroAtivo = null;
+            carregarHistorico(null);
+            document.getElementById('historico-filtro-info').style.display = 'none';
+        }
+        
+        function atualizarHistorico() {
+            const container = document.getElementById('historico-container');
+            const filtroInfo = document.getElementById('historico-filtro-info');
+            const filtroTexto = document.getElementById('historico-filtro-texto');
+            const btnMarcarTodos = document.getElementById('btn-marcar-todos-resolvido');
+            
+            // Mostra/oculta informação de filtro
+            if (pacienteFiltroAtivo) {
+                const paciente = pacientes.find(p => p.id === pacienteFiltroAtivo);
+                if (paciente) {
+                    filtroTexto.textContent = `👤 Filtrando por: ${paciente.nome}${paciente.quarto ? ` - Quarto ${paciente.quarto}` : ''}`;
+                    filtroInfo.style.display = 'block';
+                }
+            } else {
+                filtroInfo.style.display = 'none';
+            }
+            
+            // Conta quantas solicitações estão pendentes
+            const pendentes = historico.filter(h => h.status !== 'resolvido');
+            
+            // Mostra/oculta botão "Marcar todos como resolvido"
+            if (pendentes.length > 0) {
+                btnMarcarTodos.style.display = 'block';
+                btnMarcarTodos.textContent = `✅ Marcar Todos como Resolvido (${pendentes.length} pendente${pendentes.length > 1 ? 's' : ''})`;
+            } else {
+                btnMarcarTodos.style.display = 'none';
+            }
+            
+            if (historico.length === 0) {
+                container.innerHTML = `
+                    <div class="vazio">
+                        <div style="font-size: 48px; margin-bottom: 10px;">📋</div>
+                        <div>${pacienteFiltroAtivo ? 'Nenhuma solicitação encontrada para este paciente' : 'Nenhuma solicitação no histórico'}</div>
+                        ${pacienteFiltroAtivo ? '<div style="font-size: 14px; margin-top: 10px; color: #bbb;">Tente outro paciente ou remova o filtro.</div>' : ''}
+                    </div>
+                `;
+                btnMarcarTodos.style.display = 'none';  // Oculta botão se não houver histórico
+                return;
+            }
+            
+            container.innerHTML = historico.map(h => {
+                // Usa data_solicitacao se disponível, senão timestamp
+                const dataOriginal = h.data_solicitacao || h.timestamp || '';
+                const dataFormatada = formatarData(dataOriginal);
+                const dataResolucaoFormatada = h.data_resolucao ? formatarData(h.data_resolucao) : null;
+                
+                return `
+                <div class="historico-item ${h.status === 'resolvido' ? 'resolvido' : ''}">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <strong style="font-size: 16px;">${h.paciente}</strong>
+                        <span style="color: #666; font-size: 13px; font-weight: bold;">${dataFormatada}</span>
+                    </div>
+                    <p style="margin: 10px 0; font-size: 15px; line-height: 1.5;">${h.mensagem}</p>
+                    ${dataResolucaoFormatada ? `<p style="margin: 5px 0; color: #00B4D8; font-size: 12px; font-style: italic;">✅ Resolvido em: ${dataResolucaoFormatada}</p>` : ''}
+                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 15px; flex-wrap: wrap;">
+                        <span style="display: inline-block; padding: 5px 10px; border-radius: 15px; background: ${h.prioridade === 'alta' || h.prioridade === 'urgente' ? '#f44336' : h.prioridade === 'normal' ? '#00B4D8' : '#90E0C3'}; color: white; font-size: 12px; font-weight: bold;">
+                            ${h.prioridade === 'alta' || h.prioridade === 'urgente' ? '🔴 URGENTE' : h.prioridade === 'normal' ? '⚪ Normal' : '🟢 Baixa'}
+                        </span>
+                        <span class="status-badge" style="display: inline-block; padding: 5px 10px; border-radius: 15px; background: ${h.status === 'resolvido' ? '#90E0C3' : '#ff9800'}; color: ${h.status === 'resolvido' ? '#1B4965' : 'white'}; font-size: 12px; font-weight: bold;">
+                            ${h.status === 'resolvido' ? '✅ Resolvido' : '⏳ Pendente'}
+                        </span>
+                        ${h.status !== 'resolvido' ? `
+                            <button class="btn-acao btn-resolver" onclick="marcarHistoricoComoResolvido(${h.id})" style="margin-left: auto;">
+                                ✅ Marcar como Resolvido
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        // Funções de Configuração de Gestos
+        async function carregarConfigGestos() {
+            try {
+                const response = await fetch('/api/config_gestos');
+                if (response.ok) {
+                    const configs = await response.json();
+                    configs.forEach(config => {
+                        const input = document.getElementById(`gesto-${config.num_dedos}`);
+                        const select = document.getElementById(`prioridade-${config.num_dedos}`);
+                        if (input) {
+                            input.value = config.mensagem;
+                        }
+                        if (select && config.prioridade) {
+                            select.value = config.prioridade;
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Erro ao carregar configurações:', e);
+            }
+        }
+
+        async function salvarGesto(numDedos) {
+            const input = document.getElementById(`gesto-${numDedos}`);
+            const select = document.getElementById(`prioridade-${numDedos}`);
+            const mensagem = input.value.trim();
+            const prioridade = select ? select.value : 'normal';
+            
+            if (!mensagem) {
+                mostrarStatus('Por favor, digite uma mensagem para o gesto.', 'erro');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/config_gestos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        num_dedos: numDedos,
+                        mensagem: mensagem,
+                        prioridade: prioridade
+                    })
+                });
+
+                if (response.ok) {
+                    const prioridadeTexto = {
+                        'baixa': '🟢 Baixa',
+                        'normal': '🟡 Normal',
+                        'alta': '🟠 Alta',
+                        'urgente': '🔴 Urgente'
+                    }[prioridade] || 'Normal';
+                    
+                    mostrarStatus(`✅ Solicitação ${String.fromCharCode(64 + numDedos)} salva com sucesso! (${prioridadeTexto})`, 'sucesso');
+                    input.style.borderColor = '#90E0C3';
+                    setTimeout(() => {
+                        input.style.borderColor = '#ddd';
+                    }, 2000);
+                } else {
+                    mostrarStatus('❌ Erro ao salvar configuração.', 'erro');
+                }
+            } catch (e) {
+                console.error('Erro ao salvar gesto:', e);
+                mostrarStatus('❌ Erro ao salvar configuração.', 'erro');
+            }
+        }
+
+        function mostrarStatus(mensagem, tipo) {
+            const statusDiv = document.getElementById('config-status');
+            statusDiv.textContent = mensagem;
+            statusDiv.style.display = 'block';
+            statusDiv.style.backgroundColor = tipo === 'sucesso' ? '#d4edda' : '#f8d7da';
+            statusDiv.style.color = tipo === 'sucesso' ? '#155724' : '#721c24';
+            statusDiv.style.border = `1px solid ${tipo === 'sucesso' ? '#c3e6cb' : '#f5c6cb'}`;
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Variável para armazenar intervalo de atualização do tempo
+        let intervaloAtualizacaoTempo = null;
+        
+        // Função para atualizar apenas o tempo aguardando (sem recarregar do servidor)
+        function atualizarTempoAguardando() {
+            const container = document.getElementById('historico-container');
+            if (!container) return;
+            
+            const items = container.querySelectorAll('.historico-item');
+            
+            items.forEach(item => {
+                // Verifica se o item tem badge de status pendente
+                const statusBadge = item.querySelector('.status-badge');
+                if (!statusBadge) return;
+                
+                const isPendente = statusBadge.textContent.includes('Pendente');
+                
+                if (isPendente) {
+                    // Encontra o badge de tempo aguardando
+                    const tempoBadge = item.querySelector('.tempo-aguardando');
+                    if (tempoBadge) {
+                        const dataSolicitacao = tempoBadge.dataset.dataSolicitacao;
+                        if (dataSolicitacao) {
+                            const tempo = calcularTempoAguardando(dataSolicitacao);
+                            if (tempo) {
+                                // Atualiza o texto do tempo diretamente
+                                tempoBadge.textContent = `⏱️ ${tempo.texto}`;
+                                
+                                // Atualiza cores e animação
+                                tempoBadge.style.background = tempo.muitoUrgente ? '#d32f2f' : tempo.urgente ? '#ff5722' : '#ff9800';
+                                if (tempo.muitoUrgente) {
+                                    tempoBadge.style.animation = 'pulse 2s infinite';
+                                } else {
+                                    tempoBadge.style.animation = 'none';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Função para carregar e exibir a logo
+        function carregarLogo() {
+            const logoImg = document.getElementById('logo-img');
+            if (logoImg) {
+                logoImg.onload = function() {
+                    this.style.display = 'block';
+                    this.setAttribute('data-loaded', 'true');
+                };
+                logoImg.onerror = function() {
+                    // Se a logo não existir, mantém oculta
+                    this.style.display = 'none';
+                };
+                // Tenta carregar a logo
+                const logoPath = 'assets/logo.png';
+                const img = new Image();
+                img.onload = function() {
+                    logoImg.src = logoPath;
+                };
+                img.onerror = function() {
+                    // Logo não existe, mantém oculta
+                    logoImg.style.display = 'none';
+                };
+                img.src = logoPath;
+            }
+        }
+
+        // Inicialização
+        window.addEventListener('load', () => {
+            carregarLogo();  // Tenta carregar a logo
+            conectar();
+            carregarPacientes();  // Carrega pacientes do banco
+            carregarHistorico();  // Carrega histórico do banco
+            carregarAlertasDoHistorico();  // Carrega alertas pendentes do histórico
+            carregarConfigGestos();
+            
+            // Aplica o filtro padrão de pendentes
+            filtrarAlertas('pendentes');
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && (!ws || ws.readyState === WebSocket.CLOSED)) {
+                conectar();
+            }
+        });
+    </script>
+</body>
+</html>
